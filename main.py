@@ -1,86 +1,43 @@
+import sys
+from PyQt5 import QtWidgets
+
+import model # Это наш конвертированный файл дизайна
 import sqlite3
 
 conn = sqlite3.connect('PhoneBookDB.db')
 cursor = conn.cursor()
 
-print("Listing:")
-for row in cursor.execute("SELECT * from main"):
-    print(row)
-
-def addName(name):
-    n = False
-    for row in cursor.execute("SELECT * from name_t"):
-        if row[1] == name:
-            n = True
-    if n == False:
-        cursor.execute("INSERT INTO name_t VALUES (NULL,?) ", [name] )
-        print("Added name ", name)
-        return 1
-    else:
-        print("Name already exists")
-        return 0
-
-def addSurname(surname):
-    n = False
-    for row in cursor.execute("SELECT * from surname_t"):
-        if row[1] == surname:
-            n = True
-    if n == False:
-        cursor.execute("INSERT INTO surname_t VALUES (NULL,?) ", [surname] )
-        print("Added surname ", surname)
-        return 1
-    else:
-        print("Surname already exists")
-        return 0
-
-def addStreet(street):
-    n = False
-    for row in cursor.execute("SELECT * from street_t"):
-        if row[1] == street:
-            n = True
-    if n == False:
-        cursor.execute("INSERT INTO street_t VALUES (NULL,?) ", [street] )
-        print("Added street ", street)
-        return 1
-    else:
-        print("Street already exists")
-        return 0
+class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
+    def __init__(self):
+        # Это здесь нужно для доступа к переменным, методам
+        # и т.д. в файле model.py
+        super().__init__()
+        self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+        self.Sur_ok.clicked.connect(self.loadData) #обработчик кнопки
+    def loadData(self):
+        sql = """SELECT s.surname,
+                    n.name,
+                    p.patron,
+                    st.street,
+                    m.bild,
+                    m.block,
+                    m.appr,
+                    m.number
+                     FROM surname_t s, name_t n, patron_t p ,street_t st NATURAL JOIN main m """
+        res = conn.execute(sql)
+        self.Table.setRowCount(0)
+        for row_number, row_data in enumerate(res):
+            self.Table.insertRow(row_number)
+            for colum_number , data in enumerate(row_data):
+                self.Table.setItem(row_number,colum_number,QtWidgets.QTableWidgetItem(data))
 
 
-def addPatron(patron):
-    n = False
-    for row in cursor.execute("SELECT * from patron_t"):
-        if row[1] == patron:
-            n = True
-    if n == False:
-        cursor.execute("INSERT INTO patron_t VALUES (NULL,?) ", [patron])
-        print("Added patron ", patron)
-        return 1
-    else:
-        print("Patron already exists")
-        return 0
 
+def main():
+    app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
+    window = ExampleApp()  # Создаём объект класса ExampleApp
+    window.show()  # Показываем окно
+    app.exec_()  # и запускаем приложение
 
-def addMain(surname = None,name = None,  patron = None, street = None, bild = None,block = None,appr = None,number = None):
-    addSurname(surname)
-    addName(name)
-    addPatron(patron)
-    addStreet(street)
-
-    surname_sql = "(SELECT surname_id FROM surname_t WHERE surname =  '{0}')".format(surname)
-    name_sql = "(SELECT name_id FROM name_t WHERE name =  '{0}')".format(name)
-    patron_sql = "(SELECT patron_id FROM patron_t WHERE patron =  '{0}')".format(patron)
-    street_sql = "(SELECT street_id FROM street_t WHERE street =  '{0}')".format(street)
-
-    sql = "INSERT INTO main VALUES (NULL, {0},{1},{2},{3},{4},{5},{6},{7})".format(surname_sql,name_sql,patron_sql,street_sql,bild,block,appr,number)
-    print(sql)
-    cursor.execute(sql)
-
-
-if __name__ == "__main__":
-    #addSurname("Ganjela")
-    #addStreet("Dubosekovskaya")
-    #addPatron("Andreevich")
-    #addName("Vlad")
-    addMain("Ganjela","Pavel","Andreevich","Dubosecovskaya",13,2,1415,89017014147)
-    conn.commit()
+if __name__ == '__main__':
+    main()

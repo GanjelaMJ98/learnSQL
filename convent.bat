@@ -1,0 +1,1 @@
+pyuic5 model.ui -o model.py
