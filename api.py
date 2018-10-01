@@ -71,7 +71,14 @@ def addMain(surname = None,name = None,  patron = None, street = None, bild = No
     sql = "INSERT INTO main VALUES (NULL, {0},{1},{2},{3},{4},{5},{6},{7})".format(surname_sql,name_sql,patron_sql,street_sql,bild,block,appr,number)
     #print(sql)
     cursor.execute(sql)
+    conn.commit()
 
+
+def DeleteByID(id):
+    sql = "DELETE FROM main WHERE `main_id` = '{}'".format(id)
+    cursor.execute(sql)
+    conn.commit()
+    print("delete id ", id)
 
 
 
@@ -130,7 +137,8 @@ def searchOnlyStreet():
 
 
 def searchSurname(surname):
-    sql = """SELECT s.surname,
+    sql = """SELECT m.main_id,
+                        s.surname,
                         n.name,
                         p.patron,
                         st.street,
@@ -142,9 +150,10 @@ def searchSurname(surname):
     #print(sql)
     for row in cursor.execute(sql):
         print(row)
-
+    return sql
 def searchName(name):
-    sql = """SELECT s.surname,
+    sql = """SELECT m.main_id,
+                        s.surname,
                         n.name,
                         p.patron,
                         st.street,
@@ -156,9 +165,10 @@ def searchName(name):
     #print(sql)
     for row in cursor.execute(sql):
         print(row)
-
+    return sql
 def searchPatron(patron):
-    sql = """SELECT s.surname,
+    sql = """SELECT m.main_id,
+                        s.surname,
                         n.name,
                         p.patron,
                         st.street,
@@ -170,9 +180,10 @@ def searchPatron(patron):
     #print(sql)
     for row in cursor.execute(sql):
         print(row)
-
+    return sql
 def searchStreet(street):
-    sql = """SELECT s.surname,
+    sql = """SELECT m.main_id,
+                        s.surname,
                         n.name,
                         p.patron,
                         st.street,
@@ -184,7 +195,7 @@ def searchStreet(street):
     #print(sql)
     for row in cursor.execute(sql):
         print(row)
-
+    return sql
 
 if __name__ == "__main__":
     #addSurname("Ganjela")
