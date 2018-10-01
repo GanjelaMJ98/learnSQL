@@ -77,7 +77,8 @@ def addMain(surname = None,name = None,  patron = None, street = None, bild = No
 
 
 def searchMain(surname = None,name = None,  patron = None, street = None, bild = None,block = None,appr = None,number = None):
-    sql = """SELECT s.surname,
+    sql = """SELECT m.main_id,
+                    s.surname,
                     n.name,
                     p.patron,
                     st.street,
@@ -90,11 +91,43 @@ def searchMain(surname = None,name = None,  patron = None, street = None, bild =
     if surname is not None and name is not None and patron is not None and street is not None:
         sql = sql + "WHERE s.surname = '{0}' and n.name = '{1}' and p.patron = '{2}' and st.street = '{3}'".format(surname,name,patron, street)
 
-    print(sql)
     for row in cursor.execute(sql):
         print(row)
-    #print(sql)
-    #cursor.execute(sql)
+    return sql
+
+
+def searchOnlySurname():
+    list = []
+    sql = """SELECT surname FROM surname_t """
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    print(list)
+    return tuple(list)
+
+def searchOnlyName():
+    list = []
+    sql = """SELECT name FROM name_t"""
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    print(list)
+    return tuple(list)
+
+def searchOnlyPatron():
+    list = []
+    sql = """SELECT patron FROM patron_t"""
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    print(list)
+    return tuple(list)
+
+def searchOnlyStreet():
+    list = []
+    sql = """SELECT street FROM street_t"""
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    print(list)
+    return tuple(list)
+
 
 def searchSurname(surname):
     sql = """SELECT s.surname,
@@ -164,6 +197,6 @@ if __name__ == "__main__":
     #searchMain(surname="Zvezdin")
     #searchMain(surname="Zvezdin", name= "Tema" , patron="Olegovich" , street="Balashiha")
     #searchStreet("Dubosecovskaya")
-
+    searchOnlySurname()
 
     conn.commit()
