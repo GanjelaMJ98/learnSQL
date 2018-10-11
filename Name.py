@@ -12,8 +12,18 @@ class ExampleName(QtWidgets.QMainWindow, modelName.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.Search_but.clicked.connect(self.loadData)  # обработчик кнопки
+        #self.Table.clicked.connect(self.on_click)
+        self.Table.itemChanged.connect(self.cell_changed)
+        self.Table.itemClicked.connect(self.on_clicked)
 
-
+    def cell_changed(self,item):
+        print("aaa",item.text())
+    def on_click(self,index):
+        print("eeee",index)
+    def on_clicked(self,index):
+        print("row",index.row())
+        print("colum", index.column())
+        print(self.Table.item(1,1).text())
 
     def loadData(self,sql):
         sql = api.Name()

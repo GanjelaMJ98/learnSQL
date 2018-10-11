@@ -238,6 +238,29 @@ def searchStreet(street):
         print(row)
     return sql
 
+def updateMain(NewName,CurrentName, column):
+    if column == 0:
+        print("ERROR UPDATE ID")
+    elif column == 1:
+        sql = "update surname_t SET surname = '{0}' where surname_id = (select surname_id from surname_t where surname = '{1}')".format(NewName,CurrentName)
+    elif column == 2:
+        sql = "update name_t SET name = '{0}' where name_id = (select name_id from name_t where name = '{1}')".format(NewName, CurrentName)
+    elif column == 3:
+        sql = "update patron_t SET patron = '{0}' where patron_id = (select patron_id from patron_t where patron = '{1}')".format(NewName, CurrentName)
+    elif column == 4:
+        sql = "update street_t SET street = '{0}' where street_id = (select street_id from street_t where street = '{1}')".format(NewName, CurrentName)
+    #elif column == 5:
+       # sql = "update main SET bild = '{0}' where street_id = (select street_id from street_t where street = '{1}')".format(NewName, CurrentName)
+    #elif column == 6:
+    #elif column == 7:
+    #elif column == 1:
+    cursor.execute(sql)
+    conn.commit()
+    print("update {0} >> {1} ".format(CurrentName,NewName))
+
+    #sql = "update name_t SET name = 'Petro' where name_id = (select name_id from name_t where name = 'Petr')"
+
+
 def Name():
     list = []
     sql = """SELECT * FROM name_t"""
@@ -247,8 +270,12 @@ def Name():
     return sql
 
 
+
+
 if __name__ == "__main__":
-    Name()
+    #Name()
+    updateMain("Sidorenko","Sidoenko",1)
+
     #addSurname("Ganjela")
     #addStreet("Dubosekovskaya")
     #addPatron("Andreevich")

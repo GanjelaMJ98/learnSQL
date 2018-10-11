@@ -30,6 +30,12 @@ currentAppr = str()
 currentNumber = str()
 
 class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
+    currentItemRow = None
+    currentItemColumn = None
+    currentItemText = None
+    newItemText = None
+    deleteIndex = None
+    updateFlag = 0
     def __init__(self):
         # Это здесь нужно для доступа к переменным, методам
         # и т.д. в файле model.py
@@ -40,7 +46,8 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
 
         self.Search_but.clicked.connect(self.Search_data)
         self.Add_but.clicked.connect(self.Add_data)
-        self.Update_but.clicked.connect(self.Update_all)
+        #self.Update_but.clicked.connect(self.Update_all)
+        self.Update_but.clicked.connect(self.Update)
         self.Delete_but.clicked.connect(self.Delete)
 
         self.ID_t.textChanged.connect(self.onTextID)
@@ -59,6 +66,9 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         self.Patron_ok.clicked.connect(self.Patron)
         self.Street_ok.clicked.connect(self.Street)
 
+        self.Table.clicked.connect(self.onClickTable)
+        self.Table.itemChanged.connect(self.cellChangedTable)
+
     def Surname(self):
         subprocess.run(["python", "Surname.py"])
     def Name(self):
@@ -67,7 +77,7 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         subprocess.run(["python", "Patron.py"])
     def Street(self):
         subprocess.run(["python", "Street.py"])
-'''
+    '''
 #_________Поиск по одному признаку____________
     def Search_whereSurname(self):
         sql = api.searchSurname(currentSurname)
@@ -102,8 +112,7 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
             for colum_number, data in enumerate(row_data):
                 self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
 #_________Поиск по 4м признакам_______________
-'''
-
+    '''
 
     def Search_data(self):
         sql = api.NEWsearchMain(currentSurname,currentName,currentPatron,currentStreet,currentBild,currentBlock,currentAppr,currentNumber)
@@ -118,7 +127,8 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         api.addMain(surname = currentSurname,name = currentName, patron = currentPatron,street = currentStreet, bild =currentBild, block = currentBlock, appr = currentAppr, number = currentNumber)
 
     def Delete(self):
-        api.DeleteByID(currentID)
+        api.DeleteByID(self.deleteIndex)
+        #api.DeleteByID(currentID)
 #_________Обновление выпадающих списков_______
     def updateComboBox(self):
         self.comboSurname.clear()
@@ -178,6 +188,31 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         global currentNumber
         currentNumber = textNumber[-1]
 
+    def onClickTable(self, item):
+        #print("r",item.row())
+        #print("c",item.column())
+        self.currentItemRow = item.row()
+        self.currentItemColumn = item.column()
+        #print("Row: ", self.currentItemRow)
+        #print("Column: ", self.currentItemColumn)
+        self.deleteIndex = self.SearchIndexInTable(item.row(), item.column())
+        self.currentItemText = self.Table.item(item.row(),item.column()).text()
+
+        print(self.currentItemRow)
+        print(self.currentItemColumn)
+        print(self.currentItemText)
+        print(self.deleteIndex)
+        #print(index)
+        #api.DeleteByID(str(index))
+
+    def cellChangedTable(self,item):
+        if self.updateFlag == 1:
+            self.updateFlag = 0
+            self.newItemText = item.text()
+            api.updateMain(self.newItemText,self.currentItemText,self.currentItemColumn)
+            print(self.updateFlag)
+        else:
+            return
 
     def Update_all(self):
         self.updateComboBox()
@@ -214,6 +249,15 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
             for colum_number , data in enumerate(row_data):
                 self.Table.setItem(row_number,colum_number,QtWidgets.QTableWidgetItem(str(data)))
                 #print(type(data))
+    def SearchIndexInTable(self,row,column):
+        index_row = row
+        index_column = 0
+       # print(self.Table.item(row,column).text())
+        #print(self.Table.item(index_row, index_column).text())
+        return(self.Table.item(index_row, index_column).text())
+
+    def Update(self):
+        self.updateFlag = 1
 
 
 def main():
