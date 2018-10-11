@@ -1,9 +1,10 @@
 import sys
 from PyQt5 import QtWidgets
-
+import subprocess
 import model # Это наш конвертированный файл дизайна
 import api
 import sqlite3
+
 
 conn = sqlite3.connect('PhoneBookDB.db')
 cursor = conn.cursor()
@@ -51,18 +52,22 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         self.Block_t.textChanged.connect(self.onTextBlock)
         self.Appr_t.textChanged.connect(self.onTextAppr)
         self.Number_t.textChanged.connect(self.onTextNumber)
-        '''
-        self.Sur_ok.clicked.connect(self.saveTextSername)
-        self.Name_ok.clicked.connect(self.saveTextName)
-        self.Patron_ok.clicked.connect(self.saveTextPatron)
-        self.Street_ok.clicked.connect(self.saveTextStreet)
-        '''
-        self.Sur_ok.clicked.connect(self.Search_whereSurname)
-        self.Name_ok.clicked.connect(self.Search_whereName)
-        self.Patron_ok.clicked.connect(self.Search_wherePatron)
-        self.Street_ok.clicked.connect(self.Search_whereStreet)
 
 
+        self.Sur_ok.clicked.connect(self.Surname)
+        self.Name_ok.clicked.connect(self.Name)
+        self.Patron_ok.clicked.connect(self.Patron)
+        self.Street_ok.clicked.connect(self.Street)
+
+    def Surname(self):
+        subprocess.run(["python", "Surname.py"])
+    def Name(self):
+        subprocess.run(["python", "Name.py"])
+    def Patron(self):
+        subprocess.run(["python", "Patron.py"])
+    def Street(self):
+        subprocess.run(["python", "Street.py"])
+'''
 #_________Поиск по одному признаку____________
     def Search_whereSurname(self):
         sql = api.searchSurname(currentSurname)
@@ -97,8 +102,11 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
             for colum_number, data in enumerate(row_data):
                 self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
 #_________Поиск по 4м признакам_______________
+'''
+
+
     def Search_data(self):
-        sql = api.searchMain(currentSurname,currentName,currentPatron,currentStreet)
+        sql = api.NEWsearchMain(currentSurname,currentName,currentPatron,currentStreet,currentBild,currentBlock,currentAppr,currentNumber)
         res = conn.execute(sql)
         self.Table.setRowCount(0)
         for row_number, row_data in enumerate(res):

@@ -1,0 +1,3 @@
+import mainName
+
+mainName.main()
