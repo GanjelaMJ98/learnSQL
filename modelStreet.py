@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'modelName.ui'
+# Form implementation generated from reading ui file 'modelStreet.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.2
 #
@@ -51,14 +51,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Name"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Street" ))
         item = self.Table.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "name_id"))
+        item.setText(_translate("MainWindow", "street_id"))
         item = self.Table.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Name"))
+        item.setText(_translate("MainWindow", "Street"))
         self.Load_but.setText(_translate("MainWindow", "Load"))
         self.Delete_but.setText(_translate("MainWindow", "Delete"))
-        self.label.setText(_translate("MainWindow", "NAMES"))
+        self.label.setText(_translate("MainWindow", "STREETS"))
         self.Update_but.setText(_translate("MainWindow", "Update"))
         self.Search_but.setText(_translate("MainWindow", "Search"))
 

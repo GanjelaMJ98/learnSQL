@@ -1,14 +1,14 @@
 import sys
 from PyQt5 import QtWidgets
 import subprocess
-import model # Это наш конвертированный файл дизайна
+import model            #файл дизайна
 import api
 import sqlite3
-
 
 conn = sqlite3.connect('PhoneBookDB.db')
 cursor = conn.cursor()
 
+#TODO: Убрать глобальные переменные
 textID = list()
 textSurname = list()
 textName = list()
@@ -43,13 +43,12 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.LoadDB_but.clicked.connect(self.loadData) #обработчик кнопки
         self.updateComboBox()
-
+        # Основные кнопки
         self.Search_but.clicked.connect(self.Search_data)
         self.Add_but.clicked.connect(self.Add_data)
-        #self.Update_but.clicked.connect(self.Update_all)
         self.Update_but.clicked.connect(self.Update)
         self.Delete_but.clicked.connect(self.Delete)
-
+        # Ввод текста
         self.ID_t.textChanged.connect(self.onTextID)
         self.Surname_t.textChanged.connect(self.onTextSurname)
         self.Name_t.textChanged.connect(self.onTextName)
@@ -59,13 +58,12 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         self.Block_t.textChanged.connect(self.onTextBlock)
         self.Appr_t.textChanged.connect(self.onTextAppr)
         self.Number_t.textChanged.connect(self.onTextNumber)
-
-
+        # Запуск диалоговых окон
         self.Sur_ok.clicked.connect(self.Surname)
         self.Name_ok.clicked.connect(self.Name)
         self.Patron_ok.clicked.connect(self.Patron)
         self.Street_ok.clicked.connect(self.Street)
-
+        # Действия с таблицей
         self.Table.clicked.connect(self.onClickTable)
         self.Table.itemChanged.connect(self.cellChangedTable)
 
@@ -77,43 +75,16 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         subprocess.run(["python", "Patron.py"])
     def Street(self):
         subprocess.run(["python", "Street.py"])
-    '''
-#_________Поиск по одному признаку____________
-    def Search_whereSurname(self):
-        sql = api.searchSurname(currentSurname)
-        res = conn.execute(sql)
-        self.Table.setRowCount(0)
-        for row_number, row_data in enumerate(res):
-            self.Table.insertRow(row_number)
-            for colum_number, data in enumerate(row_data):
-                self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
-    def Search_whereName(self):
-        sql = api.searchName(currentName)
-        res = conn.execute(sql)
-        self.Table.setRowCount(0)
-        for row_number, row_data in enumerate(res):
-            self.Table.insertRow(row_number)
-            for colum_number, data in enumerate(row_data):
-                self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
-    def Search_wherePatron(self):
-        sql = api.searchPatron(currentPatron)
-        res = conn.execute(sql)
-        self.Table.setRowCount(0)
-        for row_number, row_data in enumerate(res):
-            self.Table.insertRow(row_number)
-            for colum_number, data in enumerate(row_data):
-                self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
-    def Search_whereStreet(self):
-        sql = api.searchStreet(currentStreet)
-        res = conn.execute(sql)
-        self.Table.setRowCount(0)
-        for row_number, row_data in enumerate(res):
-            self.Table.insertRow(row_number)
-            for colum_number, data in enumerate(row_data):
-                self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
-#_________Поиск по 4м признакам_______________
-    '''
 
+
+    def loadData(self,sql):
+        sql = api.searchMain()
+        res = conn.execute(sql)
+        self.Table.setRowCount(0)
+        for row_number, row_data in enumerate(res):
+            self.Table.insertRow(row_number)
+            for colum_number , data in enumerate(row_data):
+                self.Table.setItem(row_number,colum_number,QtWidgets.QTableWidgetItem(str(data)))
     def Search_data(self):
         sql = api.NEWsearchMain(currentSurname,currentName,currentPatron,currentStreet,currentBild,currentBlock,currentAppr,currentNumber)
         res = conn.execute(sql)
@@ -122,14 +93,38 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
             self.Table.insertRow(row_number)
             for colum_number, data in enumerate(row_data):
                 self.Table.setItem(row_number, colum_number, QtWidgets.QTableWidgetItem(str(data)))
-
     def Add_data(self):
         api.addMain(surname = currentSurname,name = currentName, patron = currentPatron,street = currentStreet, bild =currentBild, block = currentBlock, appr = currentAppr, number = currentNumber)
-
+        self.Update_all()
     def Delete(self):
         api.DeleteByID(self.deleteIndex)
         #api.DeleteByID(currentID)
+    def Update(self):
+        self.updateFlag = 1
+
+    def cellChangedTable(self,item):
+        if self.updateFlag == 1:
+            self.updateFlag = 0
+            self.newItemText = item.text()
+            api.updateMain(self.newItemText,self.currentItemText,self.currentItemColumn,self.SearchIndexInTable(item.row(),item.column()))
+            self.Update_all()
+        else:
+            return
+
 #_________Обновление выпадающих списков_______
+    def onClickTable(self, item):
+        self.currentItemRow = item.row()
+        self.currentItemColumn = item.column()
+        self.deleteIndex = self.SearchIndexInTable(item.row(), item.column())
+        self.currentItemText = self.Table.item(item.row(),item.column()).text()
+    def SearchIndexInTable(self, row, column):
+        index_row = row
+        index_column = 0
+        return (self.Table.item(index_row, index_column).text())
+
+
+    def Update_all(self):
+        self.updateComboBox()
     def updateComboBox(self):
         self.comboSurname.clear()
         self.comboName.clear()
@@ -150,11 +145,13 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         streets = api.searchOnlyStreet()
         self.comboStreet.addItems(streets)
         self.comboStreet.activated[str].connect(self.TextUpdateStreet)
-#_________Обновление полей ввода текста_______
+
+
     def onTextID(self, text):
         textID.append(text)
         global currentID
         currentID = textID[-1]
+        self.deleteIndex = textID[-1]
     def onTextSurname(self, text):
         textSurname.append(text)
         global currentSurname
@@ -188,49 +185,7 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         global currentNumber
         currentNumber = textNumber[-1]
 
-    def onClickTable(self, item):
-        #print("r",item.row())
-        #print("c",item.column())
-        self.currentItemRow = item.row()
-        self.currentItemColumn = item.column()
-        #print("Row: ", self.currentItemRow)
-        #print("Column: ", self.currentItemColumn)
-        self.deleteIndex = self.SearchIndexInTable(item.row(), item.column())
-        self.currentItemText = self.Table.item(item.row(),item.column()).text()
 
-        print(self.currentItemRow)
-        print(self.currentItemColumn)
-        print(self.currentItemText)
-        print(self.deleteIndex)
-        #print(index)
-        #api.DeleteByID(str(index))
-
-    def cellChangedTable(self,item):
-        if self.updateFlag == 1:
-            self.updateFlag = 0
-            self.newItemText = item.text()
-            api.updateMain(self.newItemText,self.currentItemText,self.currentItemColumn)
-            print(self.updateFlag)
-        else:
-            return
-
-    def Update_all(self):
-        self.updateComboBox()
-    '''
-    def saveTextSername(self):
-        global currentSurname
-        currentSurname = textSurname[-1]
-    def saveTextName(self):
-        global currentName
-        currentName = textName[-1]
-    def saveTextPatron(self):
-        global currentPatron
-        currentPatron = textPatron[-1]
-    def saveTextStreet(self):
-        global currentStreet
-        currentStreet = textStreet[-1]
-    '''
-#__________Обновление поля ввода текста через выпадающее окно____
     def TextUpdateSurname(self, text):
         self.Surname_t.setText(text)
     def TextUpdateName(self, text):
@@ -239,25 +194,11 @@ class ExampleApp(QtWidgets.QMainWindow, model.Ui_MainWindow):
         self.Patron_t.setText(text)
     def TextUpdateStreet(self, text):
         self.Street_t.setText(text)
-#_____________Загрузка полной базы данных_____________________
-    def loadData(self,sql):
-        sql = api.searchMain()
-        res = conn.execute(sql)
-        self.Table.setRowCount(0)
-        for row_number, row_data in enumerate(res):
-            self.Table.insertRow(row_number)
-            for colum_number , data in enumerate(row_data):
-                self.Table.setItem(row_number,colum_number,QtWidgets.QTableWidgetItem(str(data)))
-                #print(type(data))
-    def SearchIndexInTable(self,row,column):
-        index_row = row
-        index_column = 0
-       # print(self.Table.item(row,column).text())
-        #print(self.Table.item(index_row, index_column).text())
-        return(self.Table.item(index_row, index_column).text())
 
-    def Update(self):
-        self.updateFlag = 1
+
+
+
+
 
 
 def main():

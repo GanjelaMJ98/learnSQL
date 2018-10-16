@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PhoneBook"))
         self.Sur_ok.setText(_translate("MainWindow", "OK"))
         self.Name_ok.setText(_translate("MainWindow", "OK"))
         self.Patron_ok.setText(_translate("MainWindow", "OK"))

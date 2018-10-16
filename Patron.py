@@ -1,13 +1,13 @@
 import sys
 from PyQt5 import QtWidgets
-import modelName
+import modelPatron
 import api
 import sqlite3
 
 conn = sqlite3.connect('PhoneBookDB.db')
 cursor = conn.cursor()
 
-class ExampleName(QtWidgets.QMainWindow, modelName.Ui_MainWindow):
+class ExampleName(QtWidgets.QMainWindow, modelPatron.Ui_MainWindow):
     currentItemRow = None
     currentItemColumn = None
     currentItemText = None
@@ -31,7 +31,7 @@ class ExampleName(QtWidgets.QMainWindow, modelName.Ui_MainWindow):
             self.updateFlag = 0
             self.newItemText = item.text()
             id = str(self.SearchIndexInTable(item.row()))
-            api.windowNameUpdate(self.newItemText,id)
+            api.windowPatronUpdate(self.newItemText,id)
         else:
             return
     def onClickTable(self, item):
@@ -44,22 +44,22 @@ class ExampleName(QtWidgets.QMainWindow, modelName.Ui_MainWindow):
         index_column = 0
         return(self.Table.item(index_row, index_column).text())
 
+    def Delete(self):
+        api.windowPatronDelete(self.deleteIndex)
+    def Update(self):
+        self.updateFlag = 1
     def loadData(self,name = False):
         if name is not False:
-            sql = api.windowNameLoadTable(name)
+            sql = api.windowPatronLoadTable(name)
             res = conn.execute(sql)
         else:
-            sql = api.windowNameLoadTable()
+            sql = api.windowPatronLoadTable()
             res = conn.execute(sql)
         self.Table.setRowCount(0)
         for row_number, row_data in enumerate(res):
             self.Table.insertRow(row_number)
             for colum_number , data in enumerate(row_data):
                 self.Table.setItem(row_number,colum_number,QtWidgets.QTableWidgetItem(str(data)))
-    def Update(self):
-        self.updateFlag = 1
-    def Delete(self):
-        api.windowNameDelete(self.deleteIndex)
 
     def onTextSearch(self, text):
         self.searchText = text
@@ -71,9 +71,9 @@ class ExampleName(QtWidgets.QMainWindow, modelName.Ui_MainWindow):
 
 def main():
         app = QtWidgets.QApplication(sys.argv)
-        Name = ExampleName()
-        Name.show()
-        Name.loadData()
+        Patron = ExampleName()
+        Patron.show()
+        Patron.loadData()
         app.exec_()
 
 if __name__ == '__main__':

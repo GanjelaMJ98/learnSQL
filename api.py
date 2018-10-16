@@ -4,7 +4,6 @@ conn = sqlite3.connect('PhoneBookDB.db')
 cursor = conn.cursor()
 
 
-
 def addName(name):
     n = False
     for row in cursor.execute("SELECT * from name_t"):
@@ -77,9 +76,11 @@ def addMain(surname = None,name = None,  patron = None, street = None, bild = No
         number = "NULL"
 
     sql = "INSERT INTO main VALUES (NULL, {0},{1},{2},{3},{4},{5},{6},{7})".format(surname_sql,name_sql,patron_sql,street_sql,bild,block,appr,number)
-    print(sql)
+    #print(sql)
     cursor.execute(sql)
     conn.commit()
+
+
 
 
 def DeleteByID(id):
@@ -87,6 +88,7 @@ def DeleteByID(id):
     cursor.execute(sql)
     conn.commit()
     print("delete id ", id)
+
 
 
 
@@ -106,8 +108,8 @@ def searchMain(surname = None,name = None,  patron = None, street = None, bild =
     if surname is not None and name is not None and patron is not None and street is not None:
         sql = sql + "WHERE s.surname = '{0}' and n.name = '{1}' and p.patron = '{2}' and st.street = '{3}'".format(surname,name,patron, street)
 
-    for row in cursor.execute(sql):
-        print(row)
+    #for row in cursor.execute(sql):
+        #print(row)
     return sql
 
 def NEWsearchMain(surname = None,name = None,  patron = None, street = None, bild = None,block = None,appr = None,number = None):
@@ -138,10 +140,49 @@ def NEWsearchMain(surname = None,name = None,  patron = None, street = None, bil
         sql += "AND m.appr = '{0}' ".format(appr)
     if number != "":
         sql += "AND m.number = '{0}' ".format(number)
-    print(sql)
-    for row in cursor.execute(sql):
-        print(row)
+    #print(sql)
+    #for row in cursor.execute(sql):
+        #print(row)
     return sql
+
+def updateMain(NewName,CurrentName, column,main_id):
+    if CurrentName == "None":
+        CurrentName = "NULL"
+    if column == 0:
+        print("ERROR UPDATE ID")
+        return
+    elif column == 1:
+        #addName(NewName)
+        #sql = "update main SET surname_id = (select surname_id from surname_t where surname = '{1}' ) where main_id = '{1}'".format(NewName, main_id)
+        sql = "update surname_t SET surname = '{0}' where surname_id = (select surname_id from surname_t where surname = '{1}')".format(NewName,CurrentName)
+    elif column == 2:
+        #addSurname(NewName)
+        #sql = "update main SET name_id = (select name_id from name_t where name = '{1}' ) where main_id = '{1}'".format(NewName, main_id)
+        sql = "update name_t SET name = '{0}' where name_id = (select name_id from name_t where name = '{1}')".format(NewName, CurrentName)
+    elif column == 3:
+        #addPatron(NewName)
+        #sql = "update main SET patron_id = (select patron_id from patron_t where patron = '{1}' ) where main_id = '{1}'".format(NewName, main_id)
+        sql = "update patron_t SET patron = '{0}' where patron_id = (select patron_id from patron_t where patron = '{1}')".format(NewName, CurrentName)
+    elif column == 4:
+        #addStreet(NewName)
+        #sql = "update main SET street_id = (select street_id from street_t where street = '{1}' ) where main_id = '{1}'".format(NewName, main_id)
+        sql = "update street_t SET street = '{0}' where street_id = (select street_id from street_t where street = '{1}')".format(NewName, CurrentName)
+    elif column == 5:
+        sql = "update main SET bild = '{0}' where main_id = '{1}'".format(NewName, main_id)
+    elif column == 6:
+        sql = "update main SET block = '{0}' where main_id = '{1}'".format(NewName, main_id)
+    elif column == 7:
+        sql = "update main SET appr = '{0}' where main_id = '{1}'".format(NewName, main_id)
+    elif column == 1:
+        sql = "update main SET number = '{0}' where main_id = '{1}'".format(NewName, main_id)
+    cursor.execute(sql)
+    conn.commit()
+    print("update {0} >> {1} in index {2}".format(CurrentName,NewName,main_id))
+
+    #sql = "update name_t SET name = 'Petro' where name_id = (select name_id from name_t where name = 'Petr')"
+
+
+
 
 
 def searchOnlySurname():
@@ -149,7 +190,7 @@ def searchOnlySurname():
     sql = """SELECT surname FROM surname_t """
     for row in cursor.execute(sql):
         list.append(row[0])
-    print(list)
+    #print(list)
     return tuple(list)
 
 def searchOnlyName():
@@ -157,7 +198,7 @@ def searchOnlyName():
     sql = """SELECT name FROM name_t"""
     for row in cursor.execute(sql):
         list.append(row[0])
-    print(list)
+    #print(list)
     return tuple(list)
 
 def searchOnlyPatron():
@@ -165,7 +206,7 @@ def searchOnlyPatron():
     sql = """SELECT patron FROM patron_t"""
     for row in cursor.execute(sql):
         list.append(row[0])
-    print(list)
+    #print(list)
     return tuple(list)
 
 def searchOnlyStreet():
@@ -173,8 +214,10 @@ def searchOnlyStreet():
     sql = """SELECT street FROM street_t"""
     for row in cursor.execute(sql):
         list.append(row[0])
-    print(list)
+    #print(list)
     return tuple(list)
+
+
 
 
 def searchSurname(surname):
@@ -192,6 +235,7 @@ def searchSurname(surname):
     for row in cursor.execute(sql):
         print(row)
     return sql
+
 def searchName(name):
     sql = """SELECT m.main_id,
                         s.surname,
@@ -207,6 +251,7 @@ def searchName(name):
     for row in cursor.execute(sql):
         print(row)
     return sql
+
 def searchPatron(patron):
     sql = """SELECT m.main_id,
                         s.surname,
@@ -222,6 +267,7 @@ def searchPatron(patron):
     for row in cursor.execute(sql):
         print(row)
     return sql
+
 def searchStreet(street):
     sql = """SELECT m.main_id,
                         s.surname,
@@ -238,54 +284,155 @@ def searchStreet(street):
         print(row)
     return sql
 
-def updateMain(NewName,CurrentName, column):
-    if column == 0:
-        print("ERROR UPDATE ID")
-    elif column == 1:
-        sql = "update surname_t SET surname = '{0}' where surname_id = (select surname_id from surname_t where surname = '{1}')".format(NewName,CurrentName)
-    elif column == 2:
-        sql = "update name_t SET name = '{0}' where name_id = (select name_id from name_t where name = '{1}')".format(NewName, CurrentName)
-    elif column == 3:
-        sql = "update patron_t SET patron = '{0}' where patron_id = (select patron_id from patron_t where patron = '{1}')".format(NewName, CurrentName)
-    elif column == 4:
-        sql = "update street_t SET street = '{0}' where street_id = (select street_id from street_t where street = '{1}')".format(NewName, CurrentName)
-    #elif column == 5:
-       # sql = "update main SET bild = '{0}' where street_id = (select street_id from street_t where street = '{1}')".format(NewName, CurrentName)
-    #elif column == 6:
-    #elif column == 7:
-    #elif column == 1:
-    cursor.execute(sql)
-    conn.commit()
-    print("update {0} >> {1} ".format(CurrentName,NewName))
-
-    #sql = "update name_t SET name = 'Petro' where name_id = (select name_id from name_t where name = 'Petr')"
 
 
-def Name():
+
+
+######NAME
+def windowNameLoadTable(name = None):
     list = []
     sql = """SELECT * FROM name_t"""
+    if name is not None:
+        sql += " WHERE name = '{0}'".format(str(name))
     for row in cursor.execute(sql):
         list.append(row[0])
-    print(list)
     return sql
-
+def windowNameIdInMain(id):
+    list = []
+    sql = "select name_id from main"
+    cursor.execute(sql)
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    if list.count(id) == 0:
+        return False
+    else:
+        return True
+def windowNameDelete(id):
+    sql = "DELETE FROM name_t WHERE `name_id` = '{0}'".format(id)
+    if windowNameIdInMain(int(id)) == True:
+        print("FOREIGN KEY constraint failed: {0}".format(sql))
+        return
+    else:
+        cursor.execute(sql)
+        conn.commit()
+        print("windowName: delete id ", id)
+def windowNameUpdate(NewName,id):
+    sql = "update name_t set name = '{0}' where name_id = '{1}'".format(NewName,id)
+    cursor.execute(sql)
+    conn.commit()
+    print("windowName: update id {0}: {1}".format(id,NewName))
+######SURNAME
+def windowSurnameLoadTable(surname = None):
+    list = []
+    sql = """SELECT * FROM surname_t"""
+    if surname is not None:
+        sql += " WHERE surname = '{0}'".format(str(surname))
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    return sql
+def windowSurnameIdInMain(id):
+    list = []
+    sql = "select surname_id from main"
+    cursor.execute(sql)
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    if list.count(id) == 0:
+        return False
+    else:
+        return True
+def windowSurnameDelete(id):
+    sql = "DELETE FROM surname_t WHERE `surname_id` = '{0}'".format(id)
+    if windowSurnameIdInMain(int(id)) == True:
+        print("FOREIGN KEY constraint failed: {0}".format(sql))
+        return
+    else:
+        cursor.execute(sql)
+        conn.commit()
+        print("windowSurname: delete id ", id)
+def windowSurnameUpdate(NewName,id):
+    sql = "update surname_t set surname = '{0}' where surname_id = '{1}'".format(NewName,id)
+    cursor.execute(sql)
+    conn.commit()
+    print("windowSurname: update id {0}: {1}".format(id,NewName))
+######PATRON
+def windowPatronLoadTable(patron = None):
+    list = []
+    sql = """SELECT * FROM patron_t"""
+    if patron is not None:
+        sql += " WHERE patron = '{0}'".format(str(patron))
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    return sql
+def windowPatronIdInMain(id):
+    list = []
+    sql = "select patron_id from main"
+    cursor.execute(sql)
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    if list.count(id) == 0:
+        return False
+    else:
+        return True
+def windowPatronDelete(id):
+    sql = "DELETE FROM patron_t WHERE `patron_id` = '{0}'".format(id)
+    if windowPatronIdInMain(int(id)) == True:
+        print("FOREIGN KEY constraint failed: {0}".format(sql))
+        return
+    else:
+        cursor.execute(sql)
+        conn.commit()
+        print("windowPatron: delete id ", id)
+def windowPatronUpdate(NewName,id):
+    sql = "update patron_t set patron = '{0}' where patron_id = '{1}'".format(NewName,id)
+    cursor.execute(sql)
+    conn.commit()
+    print("windowPatron: update id {0}: {1}".format(id,NewName))
+######STREET
+def windowStreetLoadTable(street = None):
+    list = []
+    sql = """SELECT * FROM street_t"""
+    if street is not None:
+        sql += " WHERE street = '{0}'".format(str(street))
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    return sql
+def windowStreetIdInMain(id):
+    list = []
+    sql = "select street_id from main"
+    cursor.execute(sql)
+    for row in cursor.execute(sql):
+        list.append(row[0])
+    if list.count(id) == 0:
+        return False
+    else:
+        return True
+def windowStreetDelete(id):
+    sql = "DELETE FROM street_t WHERE `street_id` = '{0}'".format(id)
+    if windowStreetIdInMain(int(id)) == True:
+        print("FOREIGN KEY constraint failed: {0}".format(sql))
+        return
+    else:
+        cursor.execute(sql)
+        conn.commit()
+        print("windowStreet: delete id ", id)
+def windowStreetUpdate(NewName,id):
+    sql = "update street_t set street = '{0}' where street_id = '{1}'".format(NewName,id)
+    cursor.execute(sql)
+    conn.commit()
+    print("windowStreet: update id {0}: {1}".format(id,NewName))
 
 
 
 if __name__ == "__main__":
-    #Name()
-    updateMain("Sidorenko","Sidoenko",1)
+
+    #updateMain("Sidorenko","Sidoenko",1)
 
     #addSurname("Ganjela")
     #addStreet("Dubosekovskaya")
     #addPatron("Andreevich")
     #addName("Vlad")
+
     #addMain("Zvezdin","Tema","Olegovich","Balashiha",66,6,666,6666666666)
 
-    #searchMain()
-    #searchMain(surname="Zvezdin")
-    #searchMain(surname="Zvezdin", name= "Tema" , patron="Olegovich" , street="Balashiha")
-    #searchStreet("Dubosecovskaya")
-    searchOnlySurname()
 
     conn.commit()

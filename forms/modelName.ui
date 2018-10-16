@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>407</height>
+    <width>310</width>
+    <height>363</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QTableWidget" name="Table">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>40</y>
-      <width>291</width>
-      <height>301</height>
+      <width>271</width>
+      <height>221</height>
      </rect>
     </property>
     <property name="rowCount">
@@ -50,24 +50,24 @@
      </property>
     </column>
    </widget>
-   <widget class="QPushButton" name="Search_but">
+   <widget class="QPushButton" name="Load_but">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>350</y>
+      <x>20</x>
+      <y>310</y>
       <width>75</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Search</string>
+     <string>Load</string>
     </property>
    </widget>
    <widget class="QPushButton" name="Delete_but">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>350</y>
+      <x>140</x>
+      <y>310</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -76,23 +76,10 @@
      <string>Delete</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="OK_But">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>350</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>OK</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>130</x>
       <y>10</y>
       <width>111</width>
       <height>21</height>
@@ -100,6 +87,42 @@
     </property>
     <property name="text">
      <string>NAMES</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Update_but">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>310</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="Search_t">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>280</y>
+      <width>191</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Search_but">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>280</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Search</string>
     </property>
    </widget>
   </widget>
